@@ -1,0 +1,18 @@
+# Notas privadas de trabajo con Claude
+CLAUDE.md
+.claude/
+
+# Artefactos de compilación y claves
+arcvol/build/
+arcvol/*.apk
+arcvol/*.keystore
+arcvol/build.log
+
+# Binarios del firmware (copyright del fabricante, no se redistribuyen)
+fw/
+*.odex
+*.vdex
+*.dex
+*.cdex
+
+.DS_Store
