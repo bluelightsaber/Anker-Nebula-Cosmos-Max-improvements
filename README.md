@@ -1,48 +1,48 @@
-# Nebula Cosmos Max: volumen de la barra de sonido por HDMI ARC
+# Nebula Cosmos Max: soundbar volume over HDMI ARC
 
-Investigación (sin root) de por qué el mando del proyector **Anker Nebula Cosmos Max (D2150, Android TV 9)**
-no controla el volumen de una barra de sonido conectada por **HDMI ARC**, aunque el sistema sí
-puede hacerlo por HDMI-CEC (por ejemplo, al hacer cast desde YouTube).
+A root-free investigation into why the remote of the **Anker Nebula Cosmos Max (D2150, Android TV 9)**
+projector does not control the volume of a soundbar connected over **HDMI ARC**, even though the system
+can do it over HDMI-CEC (e.g. when casting from YouTube).
 
-> Estado: **causa encontrada y arreglo manual verificado.** Pendiente: hacerlo persistente.
+> Status: **root cause found and manual fix verified.** To do: make it persistent.
 
-## Arreglo rápido
+## Quick fix
 
 ```bash
-adb connect IP_PROYECTOR:5555
+adb connect PROJECTOR_IP:5555
 adb shell settings put global sound_output_device 0
 ```
 
-El firmware bloquea las teclas de volumen mientras `sound_output_device != 0`; con 0 siguen la ruta normal de
-Android y llegan a la barra por CEC ([detalle](docs/02-descompilacion.md)). El sistema puede volver a ponerlo
-a 1 al reiniciar o al encender la barra.
+The firmware blocks the volume keys while `sound_output_device != 0`; with 0 they follow the normal Android
+path and reach the soundbar over CEC ([details](docs/02-decompilation.md)). The system may set it back to 1
+after a reboot or when the soundbar is turned on.
 
-## Resumen
+## Summary
 
-| Hallazgo | Evidencia |
+| Finding | Evidence |
 |---|---|
-| CEC y ARC funcionan; System Audio activo | `dumpsys hdmi_control`: `mArcEstablished: true`, `mSystemAudioActivated: true` |
-| La barra (Yamaha YAS-207) responde a volumen por CEC | `media volume --stream 3 --adj raise` → `<User Control Pressed> 0x41` y `Report Audio Status` sube |
-| El mando **no** es un dispositivo de entrada del kernel | `getevent -lt` no muestra teclas al pulsar |
-| La app de sistema `com.oceanwing.receiver` recibe el mando por BLE e **inyecta** las teclas | logcat: `EventGenerator: inject code:24 action:0` |
-| El firmware (personalización SDMC de `PhoneWindowManager`) descarta las teclas de volumen con ARC y muestra "Currently connected to ARC" | logcat `SDMC PWM: ...`; cadenas en `services.vdex` |
-| Un servicio de accesibilidad no puede interceptarlas | Android no pasa eventos inyectados por los filtros de accesibilidad (`policyFlags=0x2b000000`) |
-| El bloqueo depende de `Settings.Global sound_output_device` | Bytecode de `PhoneWindowManager.dispatchDirectAudioEvent` (extraído con `oatdump` del propio proyector) |
-| Con `sound_output_device=0` el mando controla la barra | Verificado |
+| CEC and ARC work; System Audio is active | `dumpsys hdmi_control`: `mArcEstablished: true`, `mSystemAudioActivated: true` |
+| The soundbar (Yamaha YAS-207) responds to CEC volume | `media volume --stream 3 --adj raise` → `<User Control Pressed> 0x41` and `Report Audio Status` goes up |
+| The remote is **not** a kernel input device | `getevent -lt` shows no keys when pressing |
+| The system app `com.oceanwing.receiver` receives the remote over BLE and **injects** the keys | logcat: `EventGenerator: inject code:24 action:0` |
+| The firmware (SDMC customisation of `PhoneWindowManager`) drops volume keys while on ARC and shows "Currently connected to ARC" | logcat `SDMC PWM: ...`; strings in `services.vdex` |
+| An accessibility service cannot intercept them | Android does not pass injected events through accessibility filters (`policyFlags=0x2b000000`) |
+| The block depends on `Settings.Global sound_output_device` | Bytecode of `PhoneWindowManager.dispatchDirectAudioEvent` (extracted with the projector's own `oatdump`) |
+| With `sound_output_device=0` the remote controls the soundbar | Verified |
 
-Detalle paso a paso en [docs/](docs/).
+Step-by-step details in [docs/](docs/).
 
-## Requisitos para reproducir
+## Requirements to reproduce
 
-- Proyector con **Opciones de desarrollador** y **depuración ADB por red** activadas
-  (Ajustes → Preferencias del dispositivo → Información → 7 toques en "Compilación").
-- Un equipo con `adb` (platform-tools de Google) en la misma red.
+- Projector with **Developer options** and **network ADB debugging** enabled
+  (Settings → Device Preferences → About → tap "Build" 7 times).
+- A computer with `adb` (Google platform-tools) on the same network.
 
-## Contenido
+## Contents
 
-- [`docs/`](docs/): bitácora de diagnóstico con comandos y salidas.
-- [`arcvol/`](arcvol/): app mínima de accesibilidad (primer intento; no funciona por el motivo de arriba).
+- [`docs/`](docs/): diagnostic log with commands and outputs.
+- [`arcvol/`](arcvol/): minimal accessibility app (first attempt; does not work for the reason above).
 
-## Aviso
+## Disclaimer
 
-Todo se hace sin root y es reversible. No se redistribuye ningún binario del firmware.
+Everything is done without root and is reversible. No firmware binaries are redistributed.

@@ -6,10 +6,14 @@ import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
 /**
- * El firmware de Nebula descarta las teclas de volumen cuando hay barra por ARC
- * ("currently connected to ARC"). Este servicio las captura antes y llama a
- * AudioManager.adjustStreamVolume, que es la ruta que sí envía el volumen por CEC
- * (la misma que usa `media volume --adj raise` o el cast de YouTube).
+ * The Nebula firmware drops the volume keys when a soundbar is on ARC
+ * ("Currently connected to ARC"). This service captures them first and calls
+ * AudioManager.adjustStreamVolume, which is the path that does send volume over CEC
+ * (the same one used by `media volume --adj raise` or YouTube casting).
+ *
+ * Note: this does not work on the Cosmos Max, because the remote's keys are injected
+ * by com.oceanwing.receiver and Android does not pass injected events through
+ * accessibility filters. See docs/01-diagnosis.md.
  */
 public class VolumeKeyService extends AccessibilityService {
 
@@ -34,10 +38,10 @@ public class VolumeKeyService extends AccessibilityService {
                 direction = AudioManager.ADJUST_TOGGLE_MUTE;
                 break;
             default:
-                return false; // el resto de teclas sigue su camino normal
+                return false; // every other key follows its normal path
         }
 
-        // Actuar solo al pulsar (y al mantener pulsado, salvo mute); consumir también el "soltar"
+        // Act only on key down (and on repeat, except mute); also consume the key up
         boolean isRepeat = event.getRepeatCount() > 0;
         if (event.getAction() == KeyEvent.ACTION_DOWN
                 && !(isRepeat && direction == AudioManager.ADJUST_TOGGLE_MUTE)) {

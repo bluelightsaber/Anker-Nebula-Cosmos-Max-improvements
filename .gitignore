@@ -1,14 +1,14 @@
-# Notas privadas de trabajo con Claude
+# Private working notes
 CLAUDE.md
 .claude/
 
-# Artefactos de compilación y claves
+# Build artifacts and keys
 arcvol/build/
 arcvol/*.apk
 arcvol/*.keystore
 arcvol/build.log
 
-# Binarios del firmware (copyright del fabricante, no se redistribuyen)
+# Firmware binaries (vendor copyright, not redistributed)
 fw/
 *.odex
 *.vdex

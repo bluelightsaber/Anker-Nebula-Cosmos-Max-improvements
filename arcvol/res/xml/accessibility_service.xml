@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Solo pedimos filtrar teclas; no escuchamos eventos de pantalla -->
+<!-- Only key filtering is requested; no screen events are observed -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/service_desc"
     android:accessibilityFeedbackType="feedbackGeneric"
