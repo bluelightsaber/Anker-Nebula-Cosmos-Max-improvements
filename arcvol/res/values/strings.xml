@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ARC Volume</string>
-    <string name="service_desc">Redirects the remote's volume keys to AudioService to control the soundbar over HDMI-CEC.</string>
+    <string name="service_desc">Keeps sound_output_device at 0 so the remote\'s volume keys control the soundbar over HDMI-CEC.</string>
 </resources>

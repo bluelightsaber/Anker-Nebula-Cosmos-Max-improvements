@@ -81,13 +81,13 @@ The firmware intercepts the volume *keys* before they get there.
 
 ## 1.5 Attempt 1: accessibility service (does not work)
 
-App [`arcvol/`](../arcvol/): an `AccessibilityService` with `flagRequestFilterKeyEvents` that replaces the volume
+First version of the app in [`arcvol/`](../arcvol/) (since replaced by the watcher in [03](03-persistent-fix.md)): an `AccessibilityService` with `flagRequestFilterKeyEvents` that replaces the volume
 keys with `adjustStreamVolume`. It is built without Gradle using [`arcvol/build.sh`](../arcvol/build.sh)
 (portable JDK + build-tools 34 + API 28) and enabled over adb:
 
 ```bash
 adb install -r arcvol.apk
-adb shell settings put secure enabled_accessibility_services com.bluelightsaber.arcvolume/com.bluelightsaber.arcvolume.VolumeKeyService
+adb shell settings put secure enabled_accessibility_services com.bluelightsaber.arcvolume/com.bluelightsaber.arcvolume.VolumeKeyService   # v1 class name
 adb shell settings put secure accessibility_enabled 1
 ```
 

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Only key filtering is requested; no screen events are observed -->
+<!-- Used only to be started at boot and kept alive; no events or keys are observed -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/service_desc"
-    android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityFlags="flagRequestFilterKeyEvents"
-    android:canRequestFilterKeyEvents="true" />
+    android:accessibilityFeedbackType="feedbackGeneric" />

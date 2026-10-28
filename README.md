@@ -4,7 +4,7 @@ A root-free investigation into why the remote of the **Anker Nebula Cosmos Max (
 projector does not control the volume of a soundbar connected over **HDMI ARC**, even though the system
 can do it over HDMI-CEC (e.g. when casting from YouTube).
 
-> Status: **root cause found and manual fix verified.** To do: make it persistent.
+> Status: **solved.** Root cause found and a persistent, root-free fix (ARC Volume watcher app) verified.
 
 ## Quick fix
 
@@ -15,7 +15,8 @@ adb shell settings put global sound_output_device 0
 
 The firmware blocks the volume keys while `sound_output_device != 0`; with 0 they follow the normal Android
 path and reach the soundbar over CEC ([details](docs/02-decompilation.md)). The system may set it back to 1
-after a reboot or when the soundbar is turned on.
+after a reboot or when the soundbar is turned on; to keep it at 0, install the small
+[ARC Volume](docs/03-persistent-fix.md#32-arc-volume-a-tiny-watcher-app) watcher app.
 
 ## Summary
 
@@ -41,7 +42,7 @@ Step-by-step details in [docs/](docs/).
 ## Contents
 
 - [`docs/`](docs/): diagnostic log with commands and outputs.
-- [`arcvol/`](arcvol/): minimal accessibility app (first attempt; does not work for the reason above).
+- [`arcvol/`](arcvol/): ARC Volume, a minimal app that keeps `sound_output_device` at 0.
 
 ## Disclaimer
 
